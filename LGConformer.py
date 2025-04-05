@@ -7,29 +7,6 @@
 '''
 Usage:
 
-
-'''
-
-'''
-Usage:
-
-目标：时空全局信息学习，脑区
-
-思路构建：
-1 全局刚性对齐，与局部柔性配准：选择核心节点，并使用多尺度空间信息聚合,
-
-2 局部空间信息聚合方法： 这里讨论4种
-    a 直接平均
-    b 可学习参数的 a1*X1 + a2*X2 + a3*X3
-    c cat方式的
-    d 基于注意力方式的：可以使用IFNet中的方法或者  论文: Exploring the Applicability of Transfer Learning 
-      and Feature Engineering in Epilepsy Prediction Using Hybrid Transformer Model
-
-3 时间信息聚合
-
-4  基于transformer和卷积的全局-局部信息挖掘
-
-
 '''
 import torch
 import torch.nn as nn
