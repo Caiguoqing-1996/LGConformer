@@ -1,3 +1,3 @@
 This is a PyTorch implementation of the LGConformer architecture for MI-EEG classification.
 
-The code for the LGConformer algorithm is provided here. The full version of the code will be compiled and supplemented after the paper is accepted.
+The full version of the code will be compiled and supplemented after the paper is accepted.
