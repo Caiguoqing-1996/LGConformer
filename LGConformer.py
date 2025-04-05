@@ -148,7 +148,7 @@ class LocalVarLayer(nn.Module):
 
 
 
-class STformer(nn.Module):
+class LGConformer(nn.Module):
     def cal_size(self, n_chan, n_time, ):
         data = torch.rand((1, self.spa_dim, len(self.channel_index), n_time))
 
@@ -157,7 +157,7 @@ class STformer(nn.Module):
         return out_shape
 
     def __init__(self, n_chan, n_time, num_classes, para):
-        super(STformer, self).__init__()
+        super(LGConformer, self).__init__()
 
         self.nChan = n_chan
         self.nTime = n_time
@@ -258,85 +258,6 @@ class STformer(nn.Module):
         x = torch.flatten(x, start_dim=1)
         x = self.Classify_layer(x)
         return x
-
-
-
-class STformer_FullSpa(nn.Module):
-    def cal_size(self):
-        data = torch.rand((1, 1, self.nChan, self.nTime))
-        data = self.Spe_opt_layer(data)
-        # data = self.time_down_sample(data)
-        out_shape = data.shape
-        return out_shape
-
-    def __init__(self, n_chan, n_time, num_classes, para):
-        super(STformer_FullSpa, self).__init__()
-
-        self.nChan = n_chan
-        self.nTime = n_time
-        self.nClass = num_classes
-
-        spa_dim = para['spa_dim']
-        self.Spe_opt_layer = nn.Sequential(
-            nn.Conv2d(1,  spa_dim, (self.nChan, 1), stride=(1, 1)),
-            nn.BatchNorm2d(spa_dim),
-            nn.Conv2d(spa_dim, spa_dim, (1, 24), stride=(1, 1), groups=spa_dim),
-            nn.Conv2d(spa_dim, spa_dim, (1, 1), stride=(1, 1)),
-            nn.BatchNorm2d(spa_dim),
-            nn.ELU(),
-            LocalVarLayer((1, 64), (1, 32)),
-            nn.Dropout(0.5),
-        )
-
-        self.n_layer = para['n_layer']
-        self.global_att = nn.ModuleList([
-            OnlyTtransformer(d_model=spa_dim, num_heads=5, num_layers=1,
-                             d_ff=2, dropkey_rate=0.3)
-            for _ in range(self.n_layer)
-        ])
-
-        self.local_att = nn.ModuleList([
-            nn.Sequential(
-            nn.Conv2d(spa_dim, spa_dim, (1, 4), stride=(1, 1), padding='same', groups=spa_dim),
-            nn.BatchNorm2d(spa_dim),
-            nn.ELU(),
-            nn.Dropout(0.5),
-            nn.Conv2d(spa_dim, spa_dim, (1, 1), stride=(1, 1), padding='same'),
-            )
-            for _ in range(self.n_layer)
-        ])
-
-
-        fea_size = self.cal_size()
-        print('STformer CrossSub Classify feature: {}'.format(fea_size))
-        self.Classify_layer = nn.Sequential(
-            nn.Linear(spa_dim*fea_size[-1], 128),
-            nn.ELU(),
-            nn.Dropout(0.5),
-            nn.Linear(128, 32),
-            nn.ELU(),
-            nn.Dropout(0.5),
-            nn.Linear(32, self.nClass),
-            nn.LogSoftmax(dim=-1)
-        )
-
-
-
-    def forward(self, x):
-        n_batch, _, n_chan, n_time = x.shape
-        x = self.Spe_opt_layer(x)
-        for layeri in range(self.n_layer):
-            g_x = self.global_att[layeri](x)
-            l_x = self.local_att[layeri](x)
-            x = g_x + l_x
-
-        x = torch.flatten(x, start_dim=1)
-        x = self.Classify_layer(x)
-        return x
-
-
-
-
 
 
 
