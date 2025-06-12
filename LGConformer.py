@@ -222,7 +222,7 @@ class LGConformer(nn.Module):
 
 
         fea_size = self.cal_size(spa_dim, n_time)
-        print('STformer CrossSub Classify feature: {}'.format(fea_size))
+        print('STformer Classify feature: {}'.format(fea_size))
         self.Classify_layer = nn.Sequential(
             nn.Linear(spa_dim*fea_size[-1], 256),
             nn.BatchNorm1d(256),
