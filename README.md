@@ -1,4 +1,4 @@
-**LGConformer: A Local-Global Spatio-Temporal Convolutional Transformer for Enhanced MI-EEG Decoding**
+**LGConformer: A Cross-Scale Spatiotemporal Model for Robust Cross-Session EEG Decoding**
 
 
 This is a PyTorch implementation of the LGConformer architecture for MI-EEG classification.
