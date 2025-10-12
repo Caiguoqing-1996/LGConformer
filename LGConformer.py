@@ -7,7 +7,10 @@
 '''
 Usage:
 
+
 '''
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -131,24 +134,20 @@ class LocalVarLayer(nn.Module):
         super(LocalVarLayer, self).__init__()
         self.kernel_size = kernel_size  # 卷积核大小（窗口大小）
         self.stride = stride  # 步幅
-        # 定义均值池化
         self.mean_pool = nn.AvgPool2d(kernel_size=self.kernel_size, stride=self.stride)
-        # 定义平方和池化
         self.squared_pool = nn.AvgPool2d(kernel_size=self.kernel_size, stride=self.stride)
 
     def forward(self, x):
-        # 计算局部均值
         mean = self.mean_pool(x)
-        # 计算平方和池化
+
         squared = self.squared_pool(x ** 2)
-        # 使用公式 variance = E(x^2) - (E(x))^2 计算局部窗口方差
-        variance = squared - mean ** 2 
+        variance = squared - mean ** 2
         return variance
 
 
 
 
-class LGConformer(nn.Module):
+class STformer(nn.Module):
     def cal_size(self, n_chan, n_time, ):
         data = torch.rand((1, self.spa_dim, len(self.channel_index), n_time))
 
@@ -157,7 +156,7 @@ class LGConformer(nn.Module):
         return out_shape
 
     def __init__(self, n_chan, n_time, num_classes, para):
-        super(LGConformer, self).__init__()
+        super(STformer, self).__init__()
 
         self.nChan = n_chan
         self.nTime = n_time
@@ -220,9 +219,16 @@ class LGConformer(nn.Module):
             for _ in range(self.n_layer)
         ])
 
+        self.fusion_gates = nn.ModuleList([
+            nn.Sequential(
+                nn.Conv2d(spa_dim * 2, spa_dim, kernel_size=1),
+                nn.Sigmoid()
+            ) for _ in range(self.n_layer)
+        ])
+
 
         fea_size = self.cal_size(spa_dim, n_time)
-        print('STformer Classify feature: {}'.format(fea_size))
+        print('STformer CrossSub Classify feature: {}'.format(fea_size))
         self.Classify_layer = nn.Sequential(
             nn.Linear(spa_dim*fea_size[-1], 256),
             nn.BatchNorm1d(256),
@@ -240,28 +246,23 @@ class LGConformer(nn.Module):
 
     def forward(self, x):
         n_batch, _, n_chan, n_time = x.shape
-
-        # 处理索引并提取通道
         x_channels = [
             self.channel_index_spa_opt[i](x[:, :, np.array(self.channel_index[i])-1, :])
             for i in range(len(self.channel_index))
         ]
-        # 拼接结果
         x = torch.cat(x_channels, dim=2)
 
         x = self.Spe_opt_layer(x)
         for layeri in range(self.n_layer):
             g_x = self.global_att[layeri](x)
             l_x = self.local_att[layeri](x)
-            x = g_x + l_x
+            combined_features = torch.cat((g_x, l_x), dim=1)  # 在通道维度上拼接
+            gate = self.fusion_gates[layeri](combined_features)
+            x = gate * g_x + (1 - gate) * l_x
 
         x = torch.flatten(x, start_dim=1)
         x = self.Classify_layer(x)
         return x
-
-
-
-
 
 
 if __name__ == "__main__":
