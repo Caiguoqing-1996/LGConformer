@@ -106,9 +106,6 @@ if __name__ == "__main__":
     '''
         'FBCNet', 'EEGNet', 'DeepNet', 'EEGConformer', 'ShallowNet', 'LDMANet'
         'IFNet', 'TSception', 'SMT_2a'
-        
-    EEGConformer：模型的性能是很好的，也就是上限很高，但是缺点在于不够稳定，可能与后面模块中的dropout有关，
-                  可以考虑参考EEGNet的处理。在大数据中，使用更小的dropout比例
     
     '''
 
@@ -174,5 +171,6 @@ if __name__ == "__main__":
 
         print(df)
         df.to_excel(excel_path, index=False)
+
 
 
