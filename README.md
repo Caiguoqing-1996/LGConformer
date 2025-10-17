@@ -1,6 +1,7 @@
 **LGConformer: A Cross-Scale Spatiotemporal Model for Robust Cross-Session EEG Decoding**
 
+This repo provides a preliminary PyTorch implementation of LGConformer — a cross-scale spatiotemporal model tailored for robust cross-session EEG decoding, specifically for MI-EEG tasks.
 
-This is a PyTorch implementation of the LGConformer architecture for MI-EEG classification.
-
-The full version of the code will be compiled and supplemented after the paper is accepted.
+**Code Status:**
+Current content: Preliminary PyTorch implementation (not full version).
+Full code release: Scheduled after the corresponding paper is accepted. This is to accommodate potential model/code adjustments needed from future peer review feedback, as the paper is still in the pre-publication stage.
