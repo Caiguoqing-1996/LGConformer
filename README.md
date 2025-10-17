@@ -4,6 +4,6 @@ This repo provides a preliminary PyTorch implementation of LGConformer — a cro
 
 **Code Status:**
 
-      Current content: Preliminary PyTorch implementation (not full version).
+**Current content:** Preliminary PyTorch implementation (not full version).
 
-      Full code release: Scheduled after the corresponding paper is accepted. This is to accommodate potential model/code adjustments needed from future peer review feedback, as the paper is still in the pre-publication stage.
+**Full code release:** Scheduled after the corresponding paper is accepted. This is to accommodate potential model/code adjustments needed from future peer review feedback, as the paper is still in the pre-publication stage.
